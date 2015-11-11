@@ -1,0 +1,59 @@
+<html>
+<head>
+	<script src="constants.js" type="application/javascript"></script>
+	<script src="drawing.js" type="application/javascript"></script>
+	<script src="search_tree_generator.js" type="application/javascript"></script>
+	<script src="search_tree_processor.js" type="application/javascript"></script>
+	<script>
+
+		var canvas;
+		var context;
+
+		function createRandomSample(){
+			sample = [];
+
+			for(var i = 0; i < 200; i++) {
+				sample[i] = {x: Math.random()*canvas.width, y: Math.random()*canvas.width};
+			}
+
+			return sample;
+		}
+
+
+		function init() {
+			canvas = document.getElementById("canvas");
+			context = canvas.getContext("2d");
+
+			var sample = createRandomSample();
+
+			var treeGenerator = new SearchTreeGenerator();
+			var searchTree = treeGenerator.createSearchTree(sample);
+			var treeProcessor = SearchTreeProcessor(searchTree);
+
+			drawSampleAndLines(searchTree);
+
+			canvas.addEventListener('mousemove', function(e) {
+				drawSampleAndLines(searchTree);
+
+				var mousePoint = mouseCanvasPosition(e, canvas);
+				var closestPoint = treeProcessor.getClosestPoint(mousePoint);
+
+				drawLineToClosestPoint(closestPoint, mousePoint);
+			});
+		}
+
+		function mouseCanvasPosition(e, canvas) {
+			var rect = canvas.getBoundingClientRect();
+			return {
+				x: e.clientX - rect.left,
+				y: e.clientY - rect.top
+			};
+		}
+	</script>
+</head>
+<body onLoad="init();">
+<canvas id="canvas" width="500" height="500" style="background-color:#eee; display:inline-block">
+	alternate content
+</canvas>
+</body>
+</html>
